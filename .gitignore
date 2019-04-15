@@ -1,0 +1,4 @@
+/_log
+/.idea
+*.html
+!functions.php
