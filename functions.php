@@ -206,6 +206,55 @@ if(!function_exists('curl_request')) {
     }
 }
 
+function sock_data($url,$method='get',$data=null,$port=80,$t=30)
+{
+    $info=parse_url($url);
+
+    $fp = fsockopen($info["host"],$port, $errno, $errstr,$t);
+
+    // 判断是否有数据
+    if(isset($data) && !empty($data))
+    {
+        $query = http_build_query($data); // 数组转url 字符串形式
+    }else
+    {
+        $query=null;
+    }
+    // 如果用户的$url "http://www.manongjc.com/";  缺少 最后的反斜杠
+    if(!isset($info['path']) || empty($info['path']))
+    {
+        $info['path']="/index.html";
+    }
+    // 判断 请求方式
+    if($method=='post')
+    {
+        $head = "POST ".$info['path']." HTTP/1.0".PHP_EOL;
+    }else
+    {
+        $head = "GET ".$info['path']."?".$query." HTTP/1.0".PHP_EOL;
+    }
+
+    $head .= "Host: ".$info['host'].PHP_EOL; // 请求主机地址
+    $head .= "Referer: http://".$info['host'].$info['path'].PHP_EOL;
+    if(isset($data) && !empty($data) && ($method=='post'))
+    {
+        $head .= "Content-type: application/x-www-form-urlencoded".PHP_EOL;
+        $head .= "Content-Length: ".strlen(trim($query)).PHP_EOL;
+        $head .= PHP_EOL;
+        $head .= trim($query);
+    }else
+    {
+        $head .= PHP_EOL;
+    }
+    usleep(1000); // 这一句也是关键，如果没有这延时，可能在nginx服务器上就无法执行成功
+    $write = fputs($fp, $head); //写入文件(可安全用于二进制文件)。 fputs() 函数是 fwrite() 函数的别名
+    while (!feof($fp))
+    {
+        $line = fread($fp,4096);
+        echo $line;
+    }
+}
+
 /**
  * 方法：获取客户端IP地址
  * 描述：获取客户端IP地址
@@ -343,5 +392,55 @@ if(!function_exists('str_encrypt_decrypt')){
 
         }
 
+    }
+}
+
+/**
+ * async_request('http://127.0.0.1:9420/func.php','post',array_merge(['act'=>'test'],$tmp),9420);
+ */
+if(!function_exists('async_request')){
+    function async_request($url,$method='get',$data=null,$port = 80,$t = 1) {
+        $host = parse_url($url,PHP_URL_HOST);
+        $scheme = parse_url($url,PHP_URL_SCHEME);
+        $path = parse_url($url,PHP_URL_PATH);
+        $query = parse_url($url,PHP_URL_QUERY);
+        if($query) $path .= '?'.$query;
+        if($scheme == 'https') {
+            $host = 'ssl://'.$host;
+        }
+
+        if(isset($data) && !empty($data)) {
+            $query = http_build_query($data); // 数组转url 字符串形式
+        }else {
+            $query=null;
+        }
+
+        $fp = fsockopen($host,$port,$error_code,$error_msg,$t);
+        if(!$fp) {
+            return array('error_code' => $error_code,'error_msg' => $error_msg);
+        }
+        else {
+            stream_set_blocking($fp,true);//开启了手册上说的非阻塞模式
+            stream_set_timeout($fp,1);//设置超时
+
+            if(isset($data) && !empty($data) && ($method=='post'))
+            {
+                $header  = "POST ".$path." HTTP/1.0\r\n";
+                $header .= "Host: ".$host."\r\n"; // 请求主机地址
+                $header .= "Content-type: application/x-www-form-urlencoded"."\r\n";
+                $header .= "Content-Length: ".strlen(trim($query))."\r\n";
+                $header .= "Connection: close\r\n\r\n";//长连接关闭
+                $header .= $query;//长连接关闭
+            }else{
+                $header = "GET ".$path."?".$query." HTTP/1.1\r\n";
+                $header.= "Host: $host\r\n";
+                $header.= "Connection: close\r\n\r\n";//长连接关闭
+            }
+
+            fwrite($fp, $header);
+            usleep(1000); // 这一句也是关键，如果没有这延时，可能在nginx服务器上就无法执行成功
+            fclose($fp);
+            return array('error_code' => 0);
+        }
     }
 }

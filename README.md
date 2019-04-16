@@ -1,7 +1,7 @@
 # php_functions
 自己整理的php在项目中常用的方法，不依赖任何第三方库
 
-- [二维数组排序 array_order_by(array,field1,sort,field2,sort[,...])](/functions.php)
+### [二维数组排序 array_order_by(array,field1,sort,field2,sort[,...])](/functions.php)
 
 > 对二维数组根据选定字段进行排序
 
@@ -21,7 +21,7 @@ $array = [
 $sorted = array_order_by($array, 'a', SORT_DESC, 'b', SORT_ASC);
 ```
 
-- [cURL Request请求 curl_request(url,data,method,timeout,headerArray)](/functions.php)
+### [cURL Request请求 curl_request(url,data,method,timeout,headerArray)](/functions.php)
 
 > 通过php cURL扩展 模拟发送 POST、GET、RESTFUL风格等请求
 
@@ -36,7 +36,7 @@ $sorted = array_order_by($array, 'a', SORT_DESC, 'b', SORT_ASC);
 $request = curl_request('demo.test/request.php',['id'=>3123123],'POST',10);
 ```
 
-- [日志写入 write_log($log = '' ,$flag = '',$level = 'log',$path = '')](/functions.php)
+### [日志写入 write_log($log = '' ,$flag = '',$level = 'log',$path = '')](/functions.php)
 
 > 在指定位置将变量写入到文件
 
@@ -49,7 +49,7 @@ $request = curl_request('demo.test/request.php',['id'=>3123123],'POST',10);
 write_log([1,2,3,4,5,6,7],'======= debug ======'，'error');
 ```
 
-- [字符串加解密 str_encrypt_decrypt($data, $key,$crypt = 1)](/functions.php)
+### [字符串加解密 str_encrypt_decrypt($data, $key,$crypt = 1)](/functions.php)
 
 > 字符串的可逆加解密
 
@@ -63,7 +63,7 @@ $str = str_encrypt_decrypt(123123,'key',1);
 //解密
 str_encrypt_decrypt($str,'key',2);
 ```
-- [数组子孙树的递归实现 array_subtree_recursive($array , $pid = 0 ,$_pk = 'id', $_pid = 'pid', $level =0)](/functions.php)
+### [数组子孙树的递归实现 array_subtree_recursive($array , $pid = 0 ,$_pk = 'id', $_pid = 'pid', $level =0)](/functions.php)
 
 > 通过递归方式实现数组的子孙树排序，通常运用于分类等的展示，效率低但是程序结构清晰
 
@@ -94,7 +94,7 @@ $res = array_subtree_recursive($tmp);
 ```
 
 
-- [数组子孙树的迭代实现 array_subtree_iteration($array , $pid = 0 ,$_pk = 'id', $_pid = 'pid')](/functions.php)
+### [数组子孙树的迭代实现 array_subtree_iteration($array , $pid = 0 ,$_pk = 'id', $_pid = 'pid')](/functions.php)
 
 > 通过迭代方式实现数组的子孙树排序，通常运用于分类等的展示，效率高但是程序结构复杂
 
@@ -125,7 +125,7 @@ $res = array_subtree_iteration($tmp);
 
 
 
-- [数组子孙树的递归实现 array_ancestry_recursive($data , $id, $_pk = 'id' ,$_ppk = 'pid')](/functions.php)
+### [数组子孙树的递归实现 array_ancestry_recursive($data , $id, $_pk = 'id' ,$_ppk = 'pid')](/functions.php)
 
 > 通过递归方式实现数组的家谱树排序，通常运用于网站面包屑导航等
 
@@ -155,7 +155,7 @@ $res = array_ancestry_recursive($tmp,3);
 ```
 
 
-- [数组子孙树的迭代实现 array_ancestry_iteration($data , $id, $_pk = 'id' ,$_ppk = 'pid')](/functions.php)
+### [数组子孙树的迭代实现 array_ancestry_iteration($data , $id, $_pk = 'id' ,$_ppk = 'pid')](/functions.php)
 
 > 通过迭代方式实现数组的家谱树排序，通常运用于网站面包屑导航等
 
@@ -184,7 +184,7 @@ $res = array_ancestry_iteration($tmp,3);
 
 ```
 
-- [获取客户端IP地址 get_client_ip($type = 0,$adv=false)](/functions.php)
+### [获取客户端IP地址 get_client_ip($type = 0,$adv=false)](/functions.php)
 
 > 获取客户端IP地址
 
