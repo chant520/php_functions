@@ -38,6 +38,116 @@ if (!function_exists('array_order_by')){
         return array_pop($args);
     }
 }
+/**
+ * 方法：数组子孙树的递归实现
+ * 描述：通过递归方式实现数组的子孙树排序，通常运用于分类等的展示
+ * 时间：2019年4月16日11:04:06
+ * @param   array   $array  递归数组
+ * @param   string  $pid    起始节点
+ * @param   string  $_pk    主键字段
+ * @param   string  $_ppk   父级字段
+ * @param   string  $level  层级标识
+ * @return  array 排序后的数组
+ */
+if(!function_exists('array_subtree_recursive')){
+    function array_subtree_recursive($array , $pid = 0 ,$_pk = 'id', $_ppk = 'pid', $level =0){
+        //也可以用array_merge将每次返回的数组与上一次的进行合并。
+        //$data = [];
+        static $data = [];
+        foreach ($array as $key => $value){
+            if($value[$_ppk] == $pid){
+                $value['level'] = $level;
+                //$data = array_merge($data,$value);
+                $data[] = $value;
+                array_subtree_recursive($array,$value[$_pk],$_pk,$_ppk,$level+1);
+            }
+        }
+        return $data;
+    }
+}
+
+/**
+ * 方法：数组子孙树的迭代实现
+ * 描述：通过递归方式实现数组的子孙树排序，通常运用于分类等的展示
+ * 时间：2019年4月16日11:04:06
+ * @param   array   $array  递归数组
+ * @param   string  $pid    起始节点
+ * @param   string  $_pk    主键字段
+ * @param   string  $_ppk   父级字段
+ * @return  array 排序后的数组
+ */
+if(!function_exists('array_subtree_iteration')){
+    function array_subtree_iteration($array , $pid = 0 ,$_pk = 'id', $_ppk = 'pid'){
+        $task = [$pid];//任务栈
+        $data = [];
+        while (!empty($task)){
+            $flag = false;
+            foreach ($array as $key => $value){
+                if($value[$_ppk] == $pid){
+                    array_push($task,$value[$_pk]);
+                    $data[] = $value;
+                    $pid = $value[$_pk];
+                    unset($array[$key]);
+                    $flag = true;
+                }
+            }
+
+            if($flag == false){
+                array_pop($task);
+                $pid = end($task);
+            }
+        }
+        return $data;
+    }
+}
+
+/**
+ * 方法：数组家谱树的递归实现
+ * 描述：通过递归方式实现数组的家谱树排序，通常运用于网站面包屑导航等
+ * 时间：2019年4月16日14:34:06
+ * @param   array   $data   递归数组
+ * @param   string  $id     起始节点
+ * @param   string  $_pk    主键字段
+ * @param   string  $_ppk   父级字段
+ * @return  array 排序后的数组
+ */
+if(!function_exists('array_ancestry_recursive')){
+    function array_ancestry_recursive($data , $id, $_pk = 'id' ,$_ppk = 'pid') {
+        static $ancestry = array();
+        foreach($data as $key => $value) {
+            if($value[$_pk] == $id) {
+                $ancestry[] = $value;
+                array_ancestry_recursive($data , $value[$_ppk]);
+            }
+        }
+        return $ancestry;
+    }
+}
+
+/**
+ * 方法：数组家谱树的迭代实现
+ * 描述：通过递归方式实现数组的家谱树排序，通常运用于网站面包屑导航等
+ * 时间：2019年4月16日14:59:36
+ * @param   array   $data   递归数组
+ * @param   string  $id     起始节点
+ * @param   string  $_pk    主键字段
+ * @param   string  $_ppk   父级字段
+ * @return  array 排序后的数组
+ */
+if(!function_exists('array_ancestry_iteration')){
+    function array_ancestry_iteration($data , $id, $_pk = 'id' ,$_ppk = 'pid') {
+        $ancestry = array();
+        while ($id > 0){
+            foreach ($data as $key=>$value){
+                if($value[$_pk] == $id){
+                    $ancestry[] = $value;
+                    $id        = $value[$_ppk];
+                }
+            }
+        }
+        return $ancestry;
+    }
+}
 
 /**
  * 方法：cURL HTTP请求

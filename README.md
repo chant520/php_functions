@@ -63,6 +63,128 @@ $str = str_encrypt_decrypt(123123,'key',1);
 //解密
 str_encrypt_decrypt($str,'key',2);
 ```
+- [数组子孙树的递归实现 array_subtree_recursive($array , $pid = 0 ,$_pk = 'id', $_pid = 'pid', $level =0)](/functions.php)
+
+> 通过递归方式实现数组的子孙树排序，通常运用于分类等的展示，效率低但是程序结构清晰
+
+```
+@param   array   $array  递归数组
+@param   string  $pid    起始节点
+@param   string  $_pk    主键字段
+@param   string  $_pid   父级字段
+@param   string  $level  层级标识
+@return  array 排序后的数组
+
+$tmp = array(
+    array('id'=>1 , 'name'=>'首页' , 'pid'=>'0'),
+    array('id'=>2 , 'name'=>'新闻中心' , 'pid'=>'1'),
+    array('id'=>3 , 'name'=>'娱乐新闻' , 'pid'=>'2'),
+    array('id'=>4 , 'name'=>'军事要闻' , 'pid'=>'2'),
+    array('id'=>5 , 'name'=>'体育新闻' , 'pid'=>'2'),
+    array('id'=>6 , 'name'=>'博客' , 'pid'=>'1'),
+    array('id'=>7 , 'name'=>'旅游日志' , 'pid'=>'6'),
+    array('id'=>8 , 'name'=>'心情' , 'pid'=>'6'),
+    array('id'=>9 , 'name'=>'小小说' , 'pid'=>'6'),
+    array('id'=>10 , 'name'=>'明星' , 'pid'=>'3'),
+    array('id'=>11 , 'name'=>'网红' , 'pid'=>'3')
+);
+
+$res = array_subtree_recursive($tmp);
+
+```
+
+
+- [数组子孙树的迭代实现 array_subtree_iteration($array , $pid = 0 ,$_pk = 'id', $_pid = 'pid')](/functions.php)
+
+> 通过迭代方式实现数组的子孙树排序，通常运用于分类等的展示，效率高但是程序结构复杂
+
+```
+@param   array   $array  递归数组
+@param   string  $pid    起始节点
+@param   string  $_pk    主键字段
+@param   string  $_pid   父级字段
+@return  array 排序后的数组
+
+$tmp = array(
+    array('id'=>1 , 'name'=>'首页' , 'pid'=>'0'),
+    array('id'=>2 , 'name'=>'新闻中心' , 'pid'=>'1'),
+    array('id'=>3 , 'name'=>'娱乐新闻' , 'pid'=>'2'),
+    array('id'=>4 , 'name'=>'军事要闻' , 'pid'=>'2'),
+    array('id'=>5 , 'name'=>'体育新闻' , 'pid'=>'2'),
+    array('id'=>6 , 'name'=>'博客' , 'pid'=>'1'),
+    array('id'=>7 , 'name'=>'旅游日志' , 'pid'=>'6'),
+    array('id'=>8 , 'name'=>'心情' , 'pid'=>'6'),
+    array('id'=>9 , 'name'=>'小小说' , 'pid'=>'6'),
+    array('id'=>10 , 'name'=>'明星' , 'pid'=>'3'),
+    array('id'=>11 , 'name'=>'网红' , 'pid'=>'3')
+);
+
+$res = array_subtree_iteration($tmp);
+
+```
+
+
+
+- [数组子孙树的递归实现 array_ancestry_recursive($data , $id, $_pk = 'id' ,$_ppk = 'pid')](/functions.php)
+
+> 通过递归方式实现数组的家谱树排序，通常运用于网站面包屑导航等
+
+```
+@param   array   $data   递归数组
+@param   string  $pid    起始节点
+@param   string  $_pk    主键字段
+@param   string  $_ppk   父级字段
+@return  array 排序后的数组
+
+$tmp = array(
+    array('id'=>1 , 'name'=>'首页' , 'pid'=>'0'),
+    array('id'=>2 , 'name'=>'新闻中心' , 'pid'=>'1'),
+    array('id'=>3 , 'name'=>'娱乐新闻' , 'pid'=>'2'),
+    array('id'=>4 , 'name'=>'军事要闻' , 'pid'=>'2'),
+    array('id'=>5 , 'name'=>'体育新闻' , 'pid'=>'2'),
+    array('id'=>6 , 'name'=>'博客' , 'pid'=>'1'),
+    array('id'=>7 , 'name'=>'旅游日志' , 'pid'=>'6'),
+    array('id'=>8 , 'name'=>'心情' , 'pid'=>'6'),
+    array('id'=>9 , 'name'=>'小小说' , 'pid'=>'6'),
+    array('id'=>10 , 'name'=>'明星' , 'pid'=>'3'),
+    array('id'=>11 , 'name'=>'网红' , 'pid'=>'3')
+);
+
+$res = array_ancestry_recursive($tmp,3);
+
+```
+
+
+- [数组子孙树的迭代实现 array_ancestry_iteration($data , $id, $_pk = 'id' ,$_ppk = 'pid')](/functions.php)
+
+> 通过迭代方式实现数组的家谱树排序，通常运用于网站面包屑导航等
+
+```
+@param   array   $data   递归数组
+@param   string  $id     起始节点
+@param   string  $_pk    主键字段
+@param   string  $_ppk   父级字段
+@return  array 排序后的数组
+
+$tmp = array(
+    array('id'=>1 , 'name'=>'首页' , 'pid'=>'0'),
+    array('id'=>2 , 'name'=>'新闻中心' , 'pid'=>'1'),
+    array('id'=>3 , 'name'=>'娱乐新闻' , 'pid'=>'2'),
+    array('id'=>4 , 'name'=>'军事要闻' , 'pid'=>'2'),
+    array('id'=>5 , 'name'=>'体育新闻' , 'pid'=>'2'),
+    array('id'=>6 , 'name'=>'博客' , 'pid'=>'1'),
+    array('id'=>7 , 'name'=>'旅游日志' , 'pid'=>'6'),
+    array('id'=>8 , 'name'=>'心情' , 'pid'=>'6'),
+    array('id'=>9 , 'name'=>'小小说' , 'pid'=>'6'),
+    array('id'=>10 , 'name'=>'明星' , 'pid'=>'3'),
+    array('id'=>11 , 'name'=>'网红' , 'pid'=>'3')
+);
+
+$res = array_ancestry_iteration($tmp,3);
+
+```
+
+
 
 
 
