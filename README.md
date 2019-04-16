@@ -184,6 +184,19 @@ $res = array_ancestry_iteration($tmp,3);
 
 ```
 
+- [获取客户端IP地址 get_client_ip($type = 0,$adv=false)](/functions.php)
+
+> 获取客户端IP地址
+
+```
+@param integer $type 返回类型 0 返回IP地址 1 返回IPV4地址数字
+@param boolean $adv  是否进行高级模式获取（有可能被伪装）
+@return mixed
+
+$client_ip = get_client_ip();
+
+```
+
 
 
 
