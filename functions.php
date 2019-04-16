@@ -19,6 +19,9 @@
  *      ['a'=>2,'b'=>3,'c'=>3],
  * ];
  * $sorted = array_order_by($array, 'a', SORT_DESC, 'b', SORT_ASC);
+ * @param   array   $data   排序的二维数组
+ * @param   string  $filed  排序的字段
+ * @param   string  $sort   排序的方式 SORT_DESC SORT_ASC
  * @return array 排序后的数组
  */
 if (!function_exists('array_order_by')){
@@ -36,6 +39,20 @@ if (!function_exists('array_order_by')){
     }
 }
 
+/**
+ * 方法：cURL HTTP请求
+ * 描述：通过php cURL 模拟发送 POST、GET、RESTFUL风格等请求
+ * 时间：2019年4月15日10:40:57
+ * 使用示例：
+ * $request = curl_request('demo.test/request.php',['id'=>3123123],'POST',10);
+ * @param   string      $url     请求地址
+ * @param   array       $data    需要发送的数据
+ * @param   string      $method  请求方法
+ * @param   integer     $timeout 超时时间
+ * @param   array       $headerArray 请求header头
+ * @return  array       网站数据返回
+ *
+ */
 if(!function_exists('curl_request')) {
     function curl_request($url,$data,$method = 'GET',$timeout = 30,array $headerArray = []){
         $ch = curl_init();
@@ -128,7 +145,7 @@ if(!function_exists('write_log')){
  * @return string/boolean 成功返回字符串、失败返回 false
  */
 if(!function_exists('str_encrypt_decrypt')){
-    function encryptAndDecrypt($data, $key,$crypt = 1)
+    function str_encrypt_decrypt($data, $key,$crypt = 1)
     {
         $key    =    md5($key);
         $x      =    0;

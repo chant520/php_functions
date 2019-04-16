@@ -2,3 +2,10 @@
 /.idea
 *.html
 !functions.php
+temp.php
+request.php
+phpinfo.php
+func_test.php
+func.php
+fsockopen.php
+bubble.php
