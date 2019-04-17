@@ -8,6 +8,60 @@
  */
 
 /**
+ * 方法：异步发送http请求
+ * 描述：异步请求方法，至少延迟 1 秒
+ * 时间：2019年4月15日10:40:57
+ * 使用示例：
+ * async_request('http://127.0.0.1:9420/func.php','post',array_merge(['act'=>'test']),9420);
+ * @param   string      $url    请求的url，带http/https 协议
+ * @param   string      $method 请求方法 post/get
+ * @param   string      $data   需要发送的数据
+ * @param   integer     $port   端口号
+ * @param   integer     $t      超时时间
+ */
+if(!function_exists('async_request')){
+    function async_request($url,$method='get',$data=null,$port = 80,$t = 1) {
+        $host   = parse_url($url,PHP_URL_HOST);
+        $scheme = parse_url($url,PHP_URL_SCHEME);
+        $path   = parse_url($url,PHP_URL_PATH);
+        $query  = parse_url($url,PHP_URL_QUERY);
+        if($query) $path .= '?'.$query;
+        if($scheme == 'https') {
+            $host = 'ssl://'.$host;
+        }
+        $query = (isset($data) && !empty($data)) ? http_build_query($data) : null;
+
+        $fp = fsockopen($host,$port,$error_code,$error_msg, $t);
+        if(!$fp) {
+            return array('error_code' => $error_code,'error_msg' => $error_msg);
+        }
+        else {
+            stream_set_blocking($fp,true);//开启了手册上说的非阻塞模式
+            stream_set_timeout($fp,1);//设置超时
+
+            if(isset($data) && !empty($data) && ($method=='post'))
+            {
+                $header  = "POST ".$path." HTTP/1.0\r\n";
+                $header .= "Host: ".$host."\r\n"; // 请求主机地址
+                $header .= "Content-type: application/x-www-form-urlencoded"."\r\n";
+                $header .= "Content-Length: ".strlen(trim($query))."\r\n";
+                $header .= "Connection: close\r\n\r\n";//长连接关闭
+                $header .= $query;
+            }else{
+                $header = "GET ".$path."?".$query." HTTP/1.1\r\n";
+                $header.= "Host: $host\r\n";
+                $header.= "Connection: close\r\n\r\n";//长连接关闭
+            }
+
+            fwrite($fp, $header);
+            usleep(1000); // 这一句也是关键，如果没有这延时，可能在nginx服务器上就无法执行成功
+            fclose($fp);
+            return array('error_code' => 0);
+        }
+    }
+}
+
+/**
  * 方法：二维数组排序
  * 描述：对二维数组根据选定字段进行排序
  * 时间：2019年4月15日10:40:57
@@ -206,54 +260,28 @@ if(!function_exists('curl_request')) {
     }
 }
 
-function sock_data($url,$method='get',$data=null,$port=80,$t=30)
-{
-    $info=parse_url($url);
 
-    $fp = fsockopen($info["host"],$port, $errno, $errstr,$t);
-
-    // 判断是否有数据
-    if(isset($data) && !empty($data))
-    {
-        $query = http_build_query($data); // 数组转url 字符串形式
-    }else
-    {
-        $query=null;
-    }
-    // 如果用户的$url "http://www.manongjc.com/";  缺少 最后的反斜杠
-    if(!isset($info['path']) || empty($info['path']))
-    {
-        $info['path']="/index.html";
-    }
-    // 判断 请求方式
-    if($method=='post')
-    {
-        $head = "POST ".$info['path']." HTTP/1.0".PHP_EOL;
-    }else
-    {
-        $head = "GET ".$info['path']."?".$query." HTTP/1.0".PHP_EOL;
-    }
-
-    $head .= "Host: ".$info['host'].PHP_EOL; // 请求主机地址
-    $head .= "Referer: http://".$info['host'].$info['path'].PHP_EOL;
-    if(isset($data) && !empty($data) && ($method=='post'))
-    {
-        $head .= "Content-type: application/x-www-form-urlencoded".PHP_EOL;
-        $head .= "Content-Length: ".strlen(trim($query)).PHP_EOL;
-        $head .= PHP_EOL;
-        $head .= trim($query);
-    }else
-    {
-        $head .= PHP_EOL;
-    }
-    usleep(1000); // 这一句也是关键，如果没有这延时，可能在nginx服务器上就无法执行成功
-    $write = fputs($fp, $head); //写入文件(可安全用于二进制文件)。 fputs() 函数是 fwrite() 函数的别名
-    while (!feof($fp))
-    {
-        $line = fread($fp,4096);
-        echo $line;
+/**
+ * 方法：生成唯一订单流水编号
+ * 描述：来自简书的一位产品大牛的生成规则建议，时间戳 + 业务类型 + 下单客户端 + 随机码(或自增码，自增码每天可清零)+用户ID
+ * 时间：2019年4月17日15:24:36
+ * @param string    $uniq           用户或系统的唯一标识
+ * @param int       $order_type     订单类型，可根据自身业务来定义 例如，1：商品订单  2：服务订单
+ * @param int       $client_type    用户设备类型，可根据自身业务来定义 例如， 1:ios 2 android  3 webapp ...
+ * @param string    $uniqid         用户或系统的唯一标识
+ * @param string    $prefix         自定义前缀
+ * @return string   $rand_sn
+ */
+if(!function_exists('create_rand_sn')){
+    function create_rand_sn($uniq = '',$order_type = 0,$client_type = 0, $prefix = ''){
+        list($microtime,$time) = explode(' ',microtime());
+        $serial_number = floor($microtime * 100).substr($time,-2);
+        $uid = empty($uniq) ? substr($time,-4,2) : substr($uniq,-2);
+        $rand_sn = $prefix.date('Ymd',$time).$order_type.$client_type.$serial_number.$uid;
+        return $rand_sn;
     }
 }
+
 
 /**
  * 方法：获取客户端IP地址
@@ -286,6 +314,54 @@ if(!function_exists('get_client_ip')){
         $long = sprintf("%u",ip2long($ip));
         $ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
         return $ip[$type];
+    }
+}
+/**
+ * 方法：生成随机字符串
+ * 描述：随机生成字符串
+ * 时间：2019年4月17日11:53:01
+ * @param int   $length     随机字符串长度，默认6个字符
+ * @param int   $str_type   1：数字；2：字母；3：数字和字母
+ * @param bool  $strict     严格模式：将排除容易产生歧义的字符（0,1,2,i,I,o,O,z,Z）
+ * @return string $rand_string
+ */
+if(!function_exists('rand_string')){
+    function rand_string($length = 6,$str_type = 1 , $strict = true){
+        $captcha_num = [3,4,5,6,7,8,9];
+        $captcha_str = [
+            'a','b','c','d','e','f','g',
+            'h','j','f','l','m','n','p',
+            'q','r','s','t','u','v','w',
+            'x','y','A','B','C','D','E',
+            'F','G','H','J','K','L','M',
+            'N','P','Q','R','S','T','U',
+            'V','W','X','Y'
+        ];
+
+        switch ($str_type){
+            case 1:
+                $str = $captcha_num;
+                break;
+            case 2:
+                $str = $captcha_str;
+                break;
+            case 3:
+                $str = array_merge($captcha_str,$captcha_num);
+                break;
+            default :
+                $str = '';
+        }
+
+        if(!$strict) $str =  array_merge($str,[0,1,2,'i','I','o','O','z','Z']);
+        //打乱数组
+        shuffle($str);
+        //随机取出 $length 个字符
+        $rand_string = '';
+        for($i = 0 ; $i < $length ; ++$i){
+            $arr_rand = array_rand($str,5);
+            $rand_string .= $str[$arr_rand[rand(0,4)]];
+        }
+        return $rand_string;
     }
 }
 
@@ -392,55 +468,5 @@ if(!function_exists('str_encrypt_decrypt')){
 
         }
 
-    }
-}
-
-/**
- * async_request('http://127.0.0.1:9420/func.php','post',array_merge(['act'=>'test'],$tmp),9420);
- */
-if(!function_exists('async_request')){
-    function async_request($url,$method='get',$data=null,$port = 80,$t = 1) {
-        $host = parse_url($url,PHP_URL_HOST);
-        $scheme = parse_url($url,PHP_URL_SCHEME);
-        $path = parse_url($url,PHP_URL_PATH);
-        $query = parse_url($url,PHP_URL_QUERY);
-        if($query) $path .= '?'.$query;
-        if($scheme == 'https') {
-            $host = 'ssl://'.$host;
-        }
-
-        if(isset($data) && !empty($data)) {
-            $query = http_build_query($data); // 数组转url 字符串形式
-        }else {
-            $query=null;
-        }
-
-        $fp = fsockopen($host,$port,$error_code,$error_msg,$t);
-        if(!$fp) {
-            return array('error_code' => $error_code,'error_msg' => $error_msg);
-        }
-        else {
-            stream_set_blocking($fp,true);//开启了手册上说的非阻塞模式
-            stream_set_timeout($fp,1);//设置超时
-
-            if(isset($data) && !empty($data) && ($method=='post'))
-            {
-                $header  = "POST ".$path." HTTP/1.0\r\n";
-                $header .= "Host: ".$host."\r\n"; // 请求主机地址
-                $header .= "Content-type: application/x-www-form-urlencoded"."\r\n";
-                $header .= "Content-Length: ".strlen(trim($query))."\r\n";
-                $header .= "Connection: close\r\n\r\n";//长连接关闭
-                $header .= $query;//长连接关闭
-            }else{
-                $header = "GET ".$path."?".$query." HTTP/1.1\r\n";
-                $header.= "Host: $host\r\n";
-                $header.= "Connection: close\r\n\r\n";//长连接关闭
-            }
-
-            fwrite($fp, $header);
-            usleep(1000); // 这一句也是关键，如果没有这延时，可能在nginx服务器上就无法执行成功
-            fclose($fp);
-            return array('error_code' => 0);
-        }
     }
 }

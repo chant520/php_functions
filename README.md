@@ -197,6 +197,51 @@ $client_ip = get_client_ip();
 
 ```
 
+### [异步发送http请求 async_request($url,$method='get',$data=null,$port = 80,$t = 1)](/functions.php)
+
+> 异步请求方法，至少延迟 1 秒
+
+```
+@param   string      $url    请求的url，带http/https 协议
+@param   string      $method 请求方法 post/get
+@param   string      $data   需要发送的数据
+@param   integer     $port   端口号
+@param   integer     $t      超时时间
+
+async_request('http://127.0.0.1:9420/func.php','post',array_merge(['act'=>'test']),9420);
+```
+
+
+
+### [随机生成字符串 rand_string($length = 6,$str_type = 1 , $strict = true)](/functions.php)
+
+> 生成随机字符串,严格模式下 将排除容易产生歧义的字符（0,1,2,i,I,o,O,z,Z）
+
+```
+@param int   $length     随机字符串长度，默认6个字符
+@param int   $str_type   1：数字；2：字母；3：数字和字母
+@param bool  $strict     严格模式：将排除容易产生歧义的字符（0,1,2,i,I,o,O,z,Z）
+@return string $rand_string
+
+rand_string(6,3)
+```
+
+
+### [随机生成字符串 create_rand_sn($uniq = '',$order_type = 0,$client_type = 0, $prefix = '')](/functions.php)
+
+> 来自简书的一位产品大牛的生成规则建议，时间戳 + 业务类型 + 下单客户端 + 随机码(或自增码，自增码每天可清零)+用户ID
+
+```
+@param string    $uniq           用户或系统的唯一标识
+@param int       $order_type     订单类型，可根据自身业务来定义 例如，1：商品订单  2：服务订单
+@param int       $client_type    用户设备类型，可根据自身业务来定义 例如， 1:ios 2 android  3 webapp ...
+@param string    $uniqid         用户或系统的唯一标识
+@param string    $prefix         自定义前缀
+@return string   $rand_sn
+
+echo create_rand_sn(); //2019041700725669
+```
+
 
 
 
